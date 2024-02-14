@@ -1,0 +1,85 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { db } from './firebaseConfig.js';
+import { collection, getDocs, addDoc } from 'firebase/firestore'
+
+const todos = ref([]);
+
+
+onMounted(async () => {
+  const querySnapshot = await getDocs(collection(db, 'todos'));
+  todos.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+});
+
+const newTodoText = ref('');
+
+const remaining = computed(() => {
+  return todos.value.filter(todo => !todo.completed).length;
+});
+
+const complete = computed(() => {
+  return todos.value.filter(todo => todo.completed);
+});
+
+
+const addTodo = async () => {
+  if (newTodoText.value) {
+    const newTodo = {
+      contents: newTodoText.value,
+      completed: false
+    };
+
+    try {
+      const docRef = await addDoc(collection(db, 'todos'), newTodo);
+      todos.value.push({ id: docRef.id, ...newTodo });
+      newTodoText.value = '';
+    } catch (error) {
+      console.error('Error adding todo:', error);
+    }
+  }
+};
+
+
+const removeTodo = index => {
+  todos.value.splice(index, 1);
+};
+
+const toggleCompletion = index => {
+  todos.value[index].completed = !todos.value[index].completed;
+}; 
+
+</script>
+
+
+<template>
+  <div id="app" v-cloak>
+    <h1>Todo app with Vue.js</h1>
+
+    <form @submit.prevent="addTodo">
+      <input autofocus placeholder="Add new todo" name="newTodoText" v-model="newTodoText" />
+      <button>Add</button>
+    </form>
+
+    <ul v-show="todos.length">
+      <li v-for="(todo, index) in todos" :key="todo.id">
+        <input :id="'todo-' + index" :checked="todo.completed" type="checkbox" @change="toggleCompletion(index)" />
+        <label :for="'todo-' + index">{{ todo.contents }}</label>
+        <button @click="removeTodo(index)">Remove 🗑️</button>
+      </li>
+    </ul>
+
+    <p v-show="todos.length">
+      <span>You have </span>
+      <strong>{{ remaining }}</strong>
+      <span>{{ remaining === 1 ? ' item' : ' items' }} remaining</span>
+    </p>
+
+    <div>
+      <p>Completed todos:</p>
+      <ul>
+        <li v-for="(todo, index) in complete" :key="todo.id">{{ todo.contents }}</li>
+      </ul>
+    </div>
+  </div>
+</template>
+
