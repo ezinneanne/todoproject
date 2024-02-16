@@ -40,9 +40,16 @@ const addTodo = async () => {
 };
 
 
-const removeTodo = index => {
-  todos.value.splice(index, 1);
+const deleteTodo = async (index, todoId) => {
+  try {
+    const todoDocRef = doc(db, `todos/${todoId}`);
+    await deleteDoc(todoDocRef);
+    todos.value.splice(index, 1);
+  } catch (error) {
+    console.error('Error removing todo:', error);
+  }
 };
+
 
 const toggleCompletion = index => {
   todos.value[index].completed = !todos.value[index].completed;
@@ -62,6 +69,10 @@ const updateTodo = async (index, newContents) => {
       await updateDoc(todoDocRef, { contents: newContents });
 
       todos.value.splice(index, 1, todoToUpdate);
+
+      // Clear the editedTodoText and reset the editIndex
+      editedTodoText.value = '';
+      editIndex.value = null;
     } catch (error) {
       console.error('Error updating todo:', error);
     }
@@ -76,15 +87,15 @@ const updateTodo = async (index, newContents) => {
     <h1>Todo app with Vue.js</h1>
 
     <form @submit.prevent="addTodo">
-      <input autofocus placeholder="Add new todo" name="newTodoText" v-model="newTodoText" />
-      <button>Add</button>
+      <input autofocus placeholder="Add new todo..." name="newTodoText" v-model="newTodoText" />
+      <button>+</button>
     </form>
 
     <ul v-show="todos.length">
       <li v-for="(todo, index) in todos" :key="todo.id">
         <input :id="'todo-' + index" :checked="todo.completed" type="checkbox" @change="toggleCompletion(index)" />
         <label :for="'todo-' + index">{{ todo.contents }}</label>
-        <button @click="removeTodo(index)">Remove 🗑️</button>
+        <button @click="deleteTodo(index, todo.id)">Delete 🗑️</button>
         <button @click="editIndex === index ? editIndex = null : editIndex = index">{{ editIndex === index ? 'Cancel' : 'Edit' }}</button>
         <button v-if="editIndex === index" @click="updateTodo(index, editedTodoText)">Save</button>
         <input v-if="editIndex === index" v-model="editedTodoText" @keydown.enter="updateTodo(index, editedTodoText)" @keydown.esc="editIndex = null" />
@@ -99,9 +110,9 @@ const updateTodo = async (index, newContents) => {
 
     <div>
       <p>Completed todos:</p>
-      <ul>
+      <ol>
         <li v-for="(todo, index) in complete" :key="todo.id">{{ todo.contents }}</li>
-      </ul>
+      </ol>
     </div>
 
   </div>
