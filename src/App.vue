@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { db } from './firebaseConfig.js';
-import { collection, getDocs, addDoc } from 'firebase/firestore'
+import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore'
 
 const todos = ref([]);
 
@@ -48,6 +48,8 @@ const toggleCompletion = index => {
   todos.value[index].completed = !todos.value[index].completed;
 }; 
 
+const editIndex = ref(null);
+const editedTodoText = ref('');
 
 const updateTodo = async (index, newContents) => {
   if (newContents) {
@@ -84,6 +86,9 @@ const updateTodo = async (index, newContents) => {
         <input :id="'todo-' + index" :checked="todo.completed" type="checkbox" @change="toggleCompletion(index)" />
         <label :for="'todo-' + index">{{ todo.contents }}</label>
         <button @click="removeTodo(index)">Remove 🗑️</button>
+        <button @click="editIndex === index ? editIndex = null : editIndex = index">{{ editIndex === index ? 'Cancel' : 'Edit' }}</button>
+        <button v-if="editIndex === index" @click="updateTodo(index, editedTodoText)">Save</button>
+        <input v-if="editIndex === index" v-model="editedTodoText" @keydown.enter="updateTodo(index, editedTodoText)" @keydown.esc="editIndex = null" />
       </li>
     </ul>
 
@@ -100,7 +105,6 @@ const updateTodo = async (index, newContents) => {
       </ul>
     </div>
 
-    
   </div>
 </template>
 
