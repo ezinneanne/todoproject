@@ -51,15 +51,15 @@ const toggleCompletion = index => {
 const editIndex = ref(null);
 const editedTodoText = ref('');
 
+
 const updateTodo = async (index, newContents) => {
   if (newContents) {
     try {
       const todoToUpdate = todos.value[index];
       todoToUpdate.contents = newContents;
 
-      await db.collection('todos').doc(todoToUpdate.id).update({
-        contents: newContents
-      });
+      const todoDocRef = doc(db, `todos/${todoToUpdate.id}`);
+      await updateDoc(todoDocRef, { contents: newContents });
 
       todos.value.splice(index, 1, todoToUpdate);
     } catch (error) {
@@ -67,7 +67,6 @@ const updateTodo = async (index, newContents) => {
     }
   }
 };
-
 
 </script>
 
