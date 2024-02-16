@@ -83,22 +83,24 @@ const updateTodo = async (index, newContents) => {
 
 
 <template>
-  <div id="app" v-cloak>
-    <h1>Todo app with Vue.js</h1>
-
-    <form @submit.prevent="addTodo">
-      <input autofocus placeholder="Add new todo..." name="newTodoText" v-model="newTodoText" />
-      <button>+</button>
+  <div id="app" v-cloak class="wrapper">
+  <h1>Todo List App</h1>
+  <div class="input-group">
+    <form @submit.prevent="addTodo" class="addTodo input-group" >
+      <input autofocus placeholder="Add new todo..." name="newTodoText" v-model="newTodoText" class="addTodobtn" />
+      <button class="btn">+</button>
     </form>
-
-    <ul v-show="todos.length">
-      <li v-for="(todo, index) in todos" :key="todo.id">
+  </div>
+    
+    <div class="grid">
+    <ul v-show="todos.length" class="list pad" >
+      <li v-for="(todo, index) in todos" :key="todo.id" class="list input-group">
         <input :id="'todo-' + index" :checked="todo.completed" type="checkbox" @change="toggleCompletion(index)" />
         <label :for="'todo-' + index">{{ todo.contents }}</label>
-        <button @click="deleteTodo(index, todo.id)">Delete 🗑️</button>
-        <button @click="editIndex === index ? editIndex = null : editIndex = index">{{ editIndex === index ? 'Cancel' : 'Edit' }}</button>
-        <button v-if="editIndex === index" @click="updateTodo(index, editedTodoText)">Save</button>
-        <input v-if="editIndex === index" v-model="editedTodoText" @keydown.enter="updateTodo(index, editedTodoText)" @keydown.esc="editIndex = null" />
+        <button @click="deleteTodo(index, todo.id)" class="button">Delete 🗑️</button>
+        <button @click="editIndex === index ? editIndex = null : editIndex = index" class="button">{{ editIndex === index ? 'Cancel' : 'Edit' }}</button>
+        <button v-if="editIndex === index" @click="updateTodo(index, editedTodoText)" class="button">Save</button>
+        <input v-if="editIndex === index" v-model="editedTodoText" @keydown.enter="updateTodo(index, editedTodoText)" @keydown.esc="editIndex = null" class="button"/>
       </li>
     </ul>
 
@@ -107,8 +109,9 @@ const updateTodo = async (index, newContents) => {
       <strong>{{ remaining }}</strong>
       <span>{{ remaining === 1 ? ' item' : ' items' }} remaining</span>
     </p>
+    </div>
 
-    <div>
+    <div class="grid">
       <p>Completed todos:</p>
       <ol>
         <li v-for="(todo, index) in complete" :key="todo.id">{{ todo.contents }}</li>
@@ -118,3 +121,80 @@ const updateTodo = async (index, newContents) => {
   </div>
 </template>
 
+<style>
+.wrapper {
+  max-height: 100vh;
+  background-color: #fff;
+  color: #333;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  margin: 10px;
+}
+
+.grid {
+  padding: 15px 19px;
+  margin: 15px 2px;
+  background-color: aquamarine;
+  border-radius: 10px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.addTodo {
+  width: 100%;
+  padding: 10px 16px;
+  margin: 5px 0;
+  background-color: aquamarine;
+  border-radius: 10px;
+}
+
+.addTodobtn {
+  width: 85%;
+  flex: 1; 
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.btn {
+  padding: 8px 15px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  background-color: burlywood;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.list {
+  list-style-type: none;
+}
+
+.pad {
+  padding: 0;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.button {
+  padding: 3px;
+  background-color: burlywood;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+}
+
+h1 {
+  color: burlywood;
+}
+</style>
