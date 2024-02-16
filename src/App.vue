@@ -48,6 +48,25 @@ const toggleCompletion = index => {
   todos.value[index].completed = !todos.value[index].completed;
 }; 
 
+
+const updateTodo = async (index, newContents) => {
+  if (newContents) {
+    try {
+      const todoToUpdate = todos.value[index];
+      todoToUpdate.contents = newContents;
+
+      await db.collection('todos').doc(todoToUpdate.id).update({
+        contents: newContents
+      });
+
+      todos.value.splice(index, 1, todoToUpdate);
+    } catch (error) {
+      console.error('Error updating todo:', error);
+    }
+  }
+};
+
+
 </script>
 
 
@@ -80,6 +99,8 @@ const toggleCompletion = index => {
         <li v-for="(todo, index) in complete" :key="todo.id">{{ todo.contents }}</li>
       </ul>
     </div>
+
+    
   </div>
 </template>
 
