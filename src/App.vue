@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { db } from './firebaseConfig.js';
+import { useFirestore } from 'vuefire'
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore'
 
 const todos = ref([]);
