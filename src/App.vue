@@ -1,21 +1,18 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { db } from './firebaseConfig.js';
-import { bindFirestoreCollection } from 'vuefire';
+import { db, todoRef} from './firebaseConfig.js';
+import { useCollection } from 'vuefire';
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore'
 
 
 const todos = ref([]);
 
+
 onMounted(async () => {
-  const todosCollection = collection(db, 'todos');
-  bindFirestoreCollection(todos, todosCollection);
+  const querySnapshot = await getDocs(todoRef);
+  todos.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 });
 
-/*onMounted(async () => {
-  const querySnapshot = await getDocs(collection(db, 'todos'));
-  todos.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-});*/
 
 const newTodoText = ref('');
 
@@ -36,7 +33,7 @@ const addTodo = async () => {
     };
 
     try {
-      const docRef = await addDoc(collection(db, 'todos'), newTodo);
+      const docRef = await addDoc(todoRef, newTodo);
       todos.value.push({ id: docRef.id, ...newTodo });
       newTodoText.value = '';
     } catch (error) {
