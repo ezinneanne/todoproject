@@ -5,15 +5,13 @@ import router from './router.js'
 
 const app = createApp(App)
 
+import { firestorePlugin } from 'vuefire'
+Vue.use(firestorePlugin);
 
 app.use(router)
 
 app.use(VueFire, {
-    // imported above but could also just be created here
-    modules: [
-      // we will see other modules later on
-      useFirestore(),
-    ],
+    
   })
 
 app.mount('#app')
