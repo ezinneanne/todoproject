@@ -5,14 +5,16 @@ import { useCollection } from 'vuefire';
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore'
 
 
-const todos = ref([]);
+//const todos = ref([]);
 
 
-onMounted(async () => {
+/*onMounted(async () => {
   const querySnapshot = await getDocs(todoRef);
   todos.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 });
+*/
 
+const todos = useCollection(collection(db, 'todos'));
 
 const newTodoText = ref('');
 
