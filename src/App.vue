@@ -1,100 +1,11 @@
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { db, todoRef} from './firebaseConfig.js';
-import { useCollection } from 'vuefire';
-import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore'
 
-
-//const todos = ref([]);
-
-
-/*onMounted(async () => {
-  const querySnapshot = await getDocs(todoRef);
-  todos.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-});
-*/
-
-const todos = useCollection(collection(db, 'todos'));
-
-const newTodoText = ref('');
-
-const remaining = computed(() => {
-  return todos.value.filter(todo => !todo.completed).length;
-});
-
-const complete = computed(() => {
-  return todos.value.filter(todo => todo.completed);
-});
-
-
-const addTodo = async () => {
-  if (newTodoText.value) {
-    const newTodo = {
-      contents: newTodoText.value,
-      completed: false
-    };
-
-    try {
-      const docRef = await addDoc(todoRef, newTodo);
-      todos.value.push({ id: docRef.id, ...newTodo });
-      newTodoText.value = '';
-    } catch (error) {
-      console.error('Error adding todo:', error);
-    }
-  }
-};
-
-
-const deleteTodo = async (index, todoId) => {
-  try {
-    const todoDocRef = doc(db, `todos/${todoId}`);
-    await deleteDoc(todoDocRef);
-    todos.value.splice(index, 1);
-  } catch (error) {
-    console.error('Error removing todo:', error);
-  }
-};
-
-
-const toggleCompletion = index => {
-  todos.value[index].completed = !todos.value[index].completed;
-}; 
-
-const editIndex = ref(null);
-const editedTodoText = ref('');
-
-
-const updateTodo = async (index, newContents) => {
-  if (newContents) {
-    try {
-      const todoToUpdate = todos.value[index];
-      todoToUpdate.contents = newContents;
-
-      const todoDocRef = doc(db, `todos/${todoToUpdate.id}`);
-      await updateDoc(todoDocRef, { contents: newContents });
-
-      todos.value.splice(index, 1, todoToUpdate);
-
-      // Clear the editedTodoText and reset the editIndex
-      editedTodoText.value = '';
-      editIndex.value = null;
-    } catch (error) {
-      console.error('Error updating todo:', error);
-    }
-  }
-};
-
-</script>
 
 
 <template>
   <div id="app" v-cloak class="wrapper">
   <h1>Todo List App</h1>
   <div class="input-group">
-    <form @submit.prevent="addTodo" class="addTodo input-group" >
-      <input autofocus placeholder="Add new todo..." name="newTodoText" v-model="newTodoText" class="addTodobtn" />
-      <button class="btn">+</button>
-    </form>
+    
   </div>
     
     <div class="grid">
