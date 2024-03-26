@@ -8,7 +8,7 @@
         <button @click="editIndex === index ? editIndex = null : editIndex = index" class="button">{{ editIndex === index ? 'Cancel' : 'Edit' }}</button>
         <button v-if="editIndex === index" @click="updateTodo(index, editedTodoText)" class="button">Save</button>
         <input v-if="editIndex === index" v-model="editedTodoText" @keydown.enter="updateTodo(index, editedTodoText)" @keydown.esc="editIndex = null" class="button"/>
-      </li>
+        </li>
     </ul>
    </div>
 
@@ -33,7 +33,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { db, todoRef} from './firebaseConfig.js';
+import { db, todoRef} from '@/firebaseConfig.js';
 import { useCollection } from 'vuefire';
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore'
 

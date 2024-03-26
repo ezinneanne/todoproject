@@ -37,7 +37,6 @@ import TodoList from './components/TodoList.vue';
 }
 
 .addTodo {
-  width: 100%;
   padding: 10px 16px;
   margin: 5px 0;
   background-color: aquamarine;
